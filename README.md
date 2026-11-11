@@ -28,18 +28,20 @@ A small car driven by tilting your hand. One ESP32 reads an MPU6050 tilt sensor 
 
 | Signal | ESP32 GPIO |
 |---|---|
-| IN1 (left motor) | 27 |
-| IN2 (left motor) | 26 |
-| IN3 (right motor) | 25 |
-| IN4 (right motor) | 33 |
-| ENA (left speed) | 14 |
-| ENB (right speed) | 32 |
+| IN1 (left forward) | 12 (boot pin, see note below) |
+| IN2 (left backward) | 14 |
+| IN3 (right forward) | 27 |
+| IN4 (right backward) | 26 |
+| ENA (left speed) | 13 |
+| ENB (right speed) | 25 |
 | TRIG | 18 |
 | ECHO | 19 (**use a voltage divider**: HC-SR04 echo is 5V) |
 
 Change the car pins in the `#define` lines at the top of `gyro_car.ino`.
 
-**Pins to avoid on ESP32:** 0, 1, 3 (USB serial / boot), 6–11 (connected to flash, will crash), 12 (boot strapping).
+**GPIO 12 note:** GPIO 12 is a boot pin. If it is pulled HIGH while the ESP32 starts, the ESP32 won't boot. With a normal L298N it's fine, but if the car ever fails to boot or upload, unplug the IN1 wire, power on, then plug it back (or move IN1 to GPIO 33).
+
+**Pins to avoid on ESP32:** 0, 1, 3 (USB serial / boot), 6–11 (connected to flash, will crash), 12 (boot pin: usable with care, see note above).
 
 ## How it controls
 
@@ -93,5 +95,5 @@ void onReceive(const uint8_t *mac, const uint8_t *data, int len) {
 ## Status
 
 - [x] Both sketches written and compiling
-- [ ] Final car pins chosen
+- [x] Final car pins chosen
 - [ ] Tested on hardware

@@ -2,12 +2,12 @@
 #include <esp_now.h>
 
 // ---- PINS: change these to match your wiring ----
-#define IN1  27   // left motor
-#define IN2  26
-#define IN3  25   // right motor
-#define IN4  33
-#define ENA  14   // left speed (PWM)
-#define ENB  32   // right speed (PWM)
+#define IN1  12   // left forward  (boot pin: see README)
+#define IN2  14   // left backward
+#define IN3  27   // right forward
+#define IN4  26   // right backward
+#define ENA  13   // left speed (PWM)
+#define ENB  25   // right speed (PWM)
 #define TRIG 18
 #define ECHO 19   // HC-SR04 echo is 5V: use a voltage divider!
 
