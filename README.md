@@ -3,7 +3,7 @@
 A small car driven by tilting your hand. One ESP32 reads an MPU6050 tilt sensor and sends the tilt wirelessly over **ESP-NOW** (direct ESP32-to-ESP32, no router). A second ESP32 on the car receives it and drives the motors.
 
 ```
-[ Hand: ESP32 + MPU6050 ]  ── ESP-NOW ──>  [ Car: ESP32 + motor driver + HC-SR04 ]
+[ Hand: ESP32 + MPU6050 ]  ── ESP-NOW ──>  [ Car: ESP32 + motor driver ]
 ```
 
 ## Folders
@@ -11,11 +11,11 @@ A small car driven by tilting your hand. One ESP32 reads an MPU6050 tilt sensor 
 | Folder | Upload to | What it does |
 |---|---|---|
 | `gyro_remote/` | Hand ESP32 | Reads tilt, sends `throttle` and `turn` (-255..255) 20 times a second |
-| `gyro_car/` | Car ESP32 | Receives tilt, mixes it into left/right wheel speeds, stops for obstacles |
+| `gyro_car/` | Car ESP32 | Receives tilt, mixes it into left/right wheel speeds |
 
 ## Wiring
 
-### Hand controller (MPU6050)
+### Hand controller (ESP32 Dev Module + MPU6050)
 
 | MPU6050 | ESP32 |
 |---|---|
@@ -24,7 +24,7 @@ A small car driven by tilting your hand. One ESP32 reads an MPU6050 tilt sensor 
 | SDA | GPIO 21 |
 | SCL | GPIO 22 |
 
-### Car (motor driver + ultrasonic)
+### Car (ESP32 Dev Module + motor driver)
 
 | Signal | ESP32 GPIO |
 |---|---|
@@ -34,8 +34,6 @@ A small car driven by tilting your hand. One ESP32 reads an MPU6050 tilt sensor 
 | IN4 (right backward) | 26 |
 | ENA (left speed) | 13 |
 | ENB (right speed) | 25 |
-| TRIG | 18 |
-| ECHO | 19 (**use a voltage divider**: HC-SR04 echo is 5V) |
 
 Change the car pins in the `#define` lines at the top of `gyro_car.ino`.
 
@@ -54,7 +52,6 @@ Change the car pins in the `#define` lines at the top of `gyro_car.ino`.
 
 - **Mixing:** left wheel = throttle + turn, right wheel = throttle − turn, so you can curve while moving.
 - **Deadzone:** small wobbles (under 40) are ignored.
-- **Obstacle stop:** forward is blocked if something is closer than `mindistance` (25 cm). Reverse still works.
 - **Failsafe:** if no signal arrives for 0.5 s, the car brakes.
 
 ## Settings you can tweak
@@ -63,7 +60,6 @@ Change the car pins in the `#define` lines at the top of `gyro_car.ino`.
 |---|---|---|---|
 | `DEADZONE` | gyro_remote | 40 | How much tilt is ignored |
 | `-11000, 11000` in `map()` | gyro_remote | about 45° | Tilt needed for full speed (smaller number = more sensitive) |
-| `mindistance` | gyro_car | 25 cm | Obstacle stop distance |
 | `maxspeed` | gyro_car | 225 | Top PWM speed (max 255) |
 
 ## Compile

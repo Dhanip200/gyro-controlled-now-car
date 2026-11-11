@@ -8,11 +8,8 @@
 #define IN4  26   // right backward
 #define ENA  13   // left speed (PWM)
 #define ENB  25   // right speed (PWM)
-#define TRIG 18
-#define ECHO 19   // HC-SR04 echo is 5V: use a voltage divider!
 
-int mindistance = 25;   // cm
-int maxspeed    = 225;
+int maxspeed = 225;
 
 struct Packet {
   int16_t throttle;
@@ -45,21 +42,11 @@ void brake() {
   setMotor(IN3, IN4, ENB, 0);
 }
 
-long getdistance() {
-  digitalWrite(TRIG, LOW);  delayMicroseconds(2);
-  digitalWrite(TRIG, HIGH); delayMicroseconds(10);
-  digitalWrite(TRIG, LOW);
-  long duration = pulseIn(ECHO, HIGH, 25000);  // timeout so it never freezes
-  if (duration == 0) return 999;               // no echo = nothing in front
-  return duration * 0.0343 / 2;
-}
-
 void setup() {
   Serial.begin(115200);
   pinMode(IN1, OUTPUT); pinMode(IN2, OUTPUT);
   pinMode(IN3, OUTPUT); pinMode(IN4, OUTPUT);
   pinMode(ENA, OUTPUT); pinMode(ENB, OUTPUT);
-  pinMode(TRIG, OUTPUT); pinMode(ECHO, INPUT);
   brake();
 
   WiFi.mode(WIFI_STA);
@@ -79,9 +66,6 @@ void loop() {
 
   int t = throttle;
   int r = turn;
-
-  // Obstacle stop: block forward motion only, reversing is still allowed
-  if (t > 0 && getdistance() < mindistance) t = 0;
 
   // Mix: tilt right -> left wheel faster, right wheel slower
   int left  = constrain(t + r, -255, 255);
